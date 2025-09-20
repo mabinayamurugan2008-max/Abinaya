@@ -1,22 +1,34 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, DollarSign, TrendingUp, Calendar, Currency } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Plus, DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Expense {
-  id: string
-  amount: number
-  category: string
-  description: string
-  date: string
+  id: string;
+  amount: number;
+  category: string;
+  description: string;
+  date: string;
 }
 
 const categories = [
@@ -29,36 +41,38 @@ const categories = [
   "Travel",
   "Education",
   "Other",
-]
+];
 
-// currency formatter for INR
-const formatcurrency = (value: number) => {
+// Currency formatter for INR
+const formatcurrency = (value: number): string => {
   return new Intl.NumberFormat("en-IN", {
-    style: formatcurrency",
-    <currency></Currency> "INR",
-  }).format(value)
-}
+    style: "currency",
+    currency: "INR",
+  }).format(value);
+};
 
 export default function ExpenseTracker() {
-  const [expenses, setExpenses] = useState<Expense[]>([])
-  const [amount, setAmount] = useState("")
-  const [category, setCategory] = useState("")
-  const [description, setDescription] = useState("")
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0])
-  const { toast } = useToast()
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const { toast } = useToast();
 
   // Load expenses from localStorage on mount
   useEffect(() => {
-    const savedExpenses = localStorage.getItem("expenses")
+    const savedExpenses = localStorage.getItem("expenses");
     if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses))
+      setExpenses(JSON.parse(savedExpenses));
     }
-  }, [])
+  }, []);
 
   // Save expenses to localStorage whenever expenses change
   useEffect(() => {
-    localStorage.setItem("expenses", JSON.stringify(expenses))
-  }, [expenses])
+    if (expenses.length > 0) {
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+    }
+  }, [expenses]);
 
   const addExpense = () => {
     if (!amount || !category || !description) {
@@ -66,8 +80,8 @@ export default function ExpenseTracker() {
         title: "Missing Information",
         description: "Please fill in all fields",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     const newExpense: Expense = {
@@ -76,32 +90,32 @@ export default function ExpenseTracker() {
       category,
       description,
       date,
-    }
+    };
 
-    setExpenses([newExpense, ...expenses])
-    setAmount("")
-    setCategory("")
-    setDescription("")
-    setDate(new Date().toISOString().split("T")[0])
+    setExpenses([newExpense, ...expenses]);
+    setAmount("");
+    setCategory("");
+    setDescription("");
+    setDate(new Date().toISOString().split("T")[0]);
 
     toast({
       title: "Expense Added",
-    description: `${formatcurrency(Number(amount))} expense recorded successfully`,
-    })
-  }
+      description: `${formatcurrency(Number(amount))} expense recorded successfully`,
+    });
+  };
 
   const deleteExpense = (id: string) => {
-    setExpenses(expenses.filter((expense) => expense.id !== id))
+    setExpenses(expenses.filter((expense) => expense.id !== id));
     toast({
       title: "Expense Deleted",
       description: "Expense removed from your records",
-    })
-  }
+    });
+  };
 
-  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0)
+  const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const thisMonthExpenses = expenses
     .filter((expense) => new Date(expense.date).getMonth() === new Date().getMonth())
-    .reduce((sum, expense) => sum + expense.amount, 0)
+    .reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,135 +123,162 @@ export default function ExpenseTracker() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Expense Tracker</h1>
           <p className="text-muted-foreground">Track your daily expenses and manage your budget</p>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="bg-card border-border">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Total Expenses</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{formatcurrency(totalExpenses)}</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">This Month</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{formatcurrency(thisMonthExpenses)}</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Total Entries</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{expenses.length}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Add Expense Form */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="text-card-foreground flex items-center gap-2">
+                  <Plus className="h-5 w-5" />
+                  Add New Expense
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">Record your daily expenses here</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="amount" className="text-card-foreground">
+                    Amount
+                  </Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category" className="text-card-foreground">
+                    Category
+                  </Label>
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger className="bg-background border-border text-foreground">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border-border">
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat} className="text-popover-foreground">
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-card-foreground">
+                    Description
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder="What did you spend on?"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="date" className="text-card-foreground">
+                    Date
+                  </Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <Button onClick={addExpense} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  Add Expense
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Expense List */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="text-card-foreground">Recent Expenses</CardTitle>
+                <CardDescription className="text-muted-foreground">Your latest expense entries</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {expenses.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">
+                      No expenses recorded yet. Add your first expense!
+                    </p>
+                  ) : (
+                    expenses.map((expense) => (
+                      <div
+                        key={expense.id}
+                        className="flex items-center justify-between p-4 bg-background rounded-lg border border-border"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-foreground">{formatcurrency(expense.amount)}</span>
+                          </div>
+                          <div className="text-sm text-muted-foreground mb-1">{expense.description}</div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary">{expense.category}</Badge>
+                            <span className="text-xs text-muted-foreground">{expense.date}</span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteExpense(expense.id)}
+                          className="text-destructive hover:bg-destructive/10"
+                          aria-label="Delete Expense"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-card border-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-card-foreground">Total Expenses</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{formatcurrency(totalExpenses)}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-card-foreground">This Month</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{formatcurrency(thisMonthExpenses)}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-card-foreground">Total Entries</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{expenses.length}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Add Expense Form */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-card-foreground flex items-center gap-2">
-                <Plus className="h-5 w-5" />
-                Add New Expense
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">Record your daily expenses here</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-card-foreground">
-                  Amount
-                </Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="bg-background border-border text-foreground"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category" className="text-card-foreground">
-                  Category
-                </Label>
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-background border-border text-foreground">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat} className="text-popover-foreground">
-                        {cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-card-foreground">
-                  Description
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="What did you spend on?"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="bg-background border-border text-foreground"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="date" className="text-card-foreground">
-                  Date
-                </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="bg-background border-border text-foreground"
-                />
-              </div>
-
-              <Button onClick={addExpense} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                Add Expense
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Expense List */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-card-foreground">Recent Expenses</CardTitle>
-              <CardDescription className="text-muted-foreground">Your latest expense entries</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {expenses.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">
-                    No expenses recorded yet. Add your first expense!
-                  </p>
-                ) : (
-                  expenses.map((expense) => (
-                    <div
-                      key={expense.id}
-                      className="flex items-center justify-between p-4 bg-background rounded-lg border border-border"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">  
-                          <span className="font-semibold text-foreground">{formatCurrency}
+      </div>
+    </div>
+  );
+}
