@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, DollarSign, TrendingUp, Calendar } from "lucide-react"
+import { Trash2, Plus, DollarSign, TrendingUp, Calendar, Currency } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface Expense {
@@ -31,11 +31,11 @@ const categories = [
   "Other",
 ]
 
-// Rupee formatter for INR
-const formatRupee = (value: number) => {
+// currency formatter for INR
+const formatcurrency = (value: number) => {
   return new Intl.NumberFormat("en-IN", {
-    style: formatRupee",
-    <Rupee></Rupee> "INR",
+    style: formatcurrency",
+    <currency></Currency> "INR",
   }).format(value)
 }
 
@@ -86,7 +86,7 @@ export default function ExpenseTracker() {
 
     toast({
       title: "Expense Added",
-      description: `₹{formatRupee(Number(amount))} expense recorded successfully`,
+    description: `${formatcurrency(Number(amount))} expense recorded successfully`,
     })
   }
 
@@ -119,7 +119,7 @@ export default function ExpenseTracker() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{formatRupee(totalExpenses)}</div>
+              <div className="text-2xl font-bold text-card-foreground">{formatcurrency(totalExpenses)}</div>
             </CardContent>
           </Card>
 
@@ -129,7 +129,7 @@ export default function ExpenseTracker() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{formatRupee(thisMonthExpenses)}</div>
+              <div className="text-2xl font-bold text-card-foreground">{formatcurrency(thisMonthExpenses)}</div>
             </CardContent>
           </Card>
 
@@ -239,5 +239,5 @@ export default function ExpenseTracker() {
                       className="flex items-center justify-between p-4 bg-background rounded-lg border border-border"
                     >
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-foreground">{formatCurr
+                        <div className="flex items-center gap-2 mb-1">  
+                          <span className="font-semibold text-foreground">{formatCurrency}
