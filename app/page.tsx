@@ -31,6 +31,14 @@ const categories = [
   "Other",
 ]
 
+// Rupee formatter for INR
+const formatRupee = (value: number) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: formatRupee",
+    <Rupee></Rupee> "INR",
+  }).format(value)
+}
+
 export default function ExpenseTracker() {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [amount, setAmount] = useState("")
@@ -78,7 +86,7 @@ export default function ExpenseTracker() {
 
     toast({
       title: "Expense Added",
-      description: `$${amount} expense recorded successfully`,
+      description: `₹{formatRupee(Number(amount))} expense recorded successfully`,
     })
   }
 
@@ -111,7 +119,7 @@ export default function ExpenseTracker() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">${totalExpenses.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-card-foreground">{formatRupee(totalExpenses)}</div>
             </CardContent>
           </Card>
 
@@ -121,7 +129,7 @@ export default function ExpenseTracker() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">${thisMonthExpenses.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-card-foreground">{formatRupee(thisMonthExpenses)}</div>
             </CardContent>
           </Card>
 
@@ -232,30 +240,4 @@ export default function ExpenseTracker() {
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-foreground">${expense.amount.toFixed(2)}</span>
-                          <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                            {expense.category}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-1">{expense.description}</p>
-                        <p className="text-xs text-muted-foreground">{expense.date}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteExpense(expense.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
-}
+                          <span className="font-semibold text-foreground">{formatCurr
